@@ -1,0 +1,31 @@
+body{
+  background-color: lightcyan;
+
+}
+
+#wrapper {
+  width: 1065px;
+    height: 780px;
+    border: 3px solid #424242;
+    border-radius: 15px;
+    padding: 10px;
+    margin: auto;
+}
+
+#title {
+    background-color: #809080;
+    text-align: center;
+    color: brown;
+    padding: 0px 0px 0px 0px;
+    margin-top: 10px;
+}
+
+main {
+    width: 800px;
+    height: 600px;
+    border: 3px solid #424242;
+    
+    padding: 10px;
+    margin: auto;
+    margin-top: 30px;
+}
