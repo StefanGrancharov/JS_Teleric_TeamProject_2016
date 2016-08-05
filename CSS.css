@@ -19,13 +19,3 @@ body{
     padding: 0px 0px 0px 0px;
     margin-top: 10px;
 }
-
-main {
-    width: 800px;
-    height: 600px;
-    border: 3px solid #424242;
-    
-    padding: 10px;
-    margin: auto;
-    margin-top: 30px;
-}
