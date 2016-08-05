@@ -87,17 +87,54 @@ window.addEventListener('load', function() {
 
     }
 
+//creating cookies
+function createCookie(options) {
+    var cookie = {
+        context: options.context,
+        cookieX: options.x,
+        cookieY: options.y,
+        cookieRadius: options.r
+    };
+
+    return cookie;
+}
+
+//new canvas layer for the cookies
+var cookieCanvas = document.getElementById("balls-canvas"),
+    cookieContext = cookieCanvas.getContext("2d");
+
+var cookieImg = document.getElementById("cookie-food");
+
+//counting frames to spawn new cookie
+var spawnCookieCountFrames = 0;
+
 //GameLoops
     function gameLoop() {
 
         ctx.clearRect(0, 0, canvasPlayer.width, canvasPlayer.height);
         ctx.beginPath();
 
-       
         updateCoordinates(1); //this might need a chnage
 
         playerOne.visualize();
         playerTwo.visualize();
+        
+        //Spawning cookies after 120 frames
+        //There is a bug which will be fixed -> some cookies are spawning in the walls of the canvas
+        spawnCookieCountFrames += 1;
+        if(spawnCookieCountFrames > 120){
+            var cookie = createCookie({
+                context: cookieContext,
+                x: Math.random() * cookieCanvas.width - 10,
+                y: Math.random() * cookieCanvas.height,
+                r: 10
+            });
+            cookieContext.beginPath();
+            cookieContext.drawImage(cookieImg, cookie.cookieX, cookie.cookieY,
+                                    cookie.cookieRadius * 4, cookie.cookieRadius * 4);
+            spawnCookieCountFrames = 0;
+        }
+
         ctx.closePath();
 
         window.requestAnimationFrame(gameLoop);
