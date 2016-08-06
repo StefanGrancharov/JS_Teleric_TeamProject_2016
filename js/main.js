@@ -38,6 +38,9 @@ window.addEventListener('load', function() {
     var playerOneImg = document.getElementById("player-one"),
         playerTwoImg = document.getElementById("player-two");
 
+//Players initial score
+    var initialScore = 0;
+
 //Event Listeners
     window.addEventListener("keydown", keysPressed, false);
     window.addEventListener("keyup", keysReleased, false);
@@ -142,6 +145,10 @@ var cookieImg = document.getElementById("cookie-food");
 //counting frames to spawn new cookie
 var spawnCookieCountFrames = 0;
 
+
+var firstPlayerScore = document.getElementById("score-table").firstElementChild.nextElementSibling,
+    secondPlayerScore = document.getElementById("score-table").lastElementChild;
+
 //GameLoops
     function gameLoop() {
 
@@ -182,7 +189,9 @@ var spawnCookieCountFrames = 0;
 
         //Are player colliding with cookies
         CollidingWithCookies(playerOne, cookies);
+        firstPlayerScore.innerHTML = "Player 1: " + playerOne.cookiesEaten;
         CollidingWithCookies(playerTwo, cookies);
+        secondPlayerScore.innerHTML = "Player 2: " + playerTwo.cookiesEaten;
 
         //Are player colliding with other player
         if(isPlayerCollidingWithOtherObject(playerOne, playerTwo)){

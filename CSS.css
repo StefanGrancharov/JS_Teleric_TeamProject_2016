@@ -5,11 +5,10 @@ body{
 
 #wrapper {
   width: 1065px;
-    height: 780px;
+    height: 630px;
     border: 3px solid #424242;
     border-radius: 15px;
     padding: 10px;
-    margin: auto;
 }
 
 #title {
@@ -29,10 +28,30 @@ canvas{
   display: none;
   position: absolute;
   top: 260px;
-  left: 532px;
+  left: 432px;
 }
 
 img{
   width: 100px;
   height: 100px;
+}
+
+#score {
+  border: 3px solid #424242;
+  border-radius: 15px;
+  position: fixed;
+  top: 10px;
+  right: 15px;
+  width: 120px;
+  height: 110px;
+  padding-left: 10px;
+}
+
+#score #score-table{
+  padding: 0;
+  list-style-type: none;
+}
+
+#score #score-table li{
+  margin-bottom: 10px;
 }
