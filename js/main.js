@@ -16,23 +16,27 @@ window.addEventListener('load', function() {
             name: "player" + globalID,
             x: x,
             y: y,
-            radius: r,
+            r: r,
             speed: s,
-            visualize: function () {
-                drawCircle(this.x, this.y, this.radius);
+            cookiesEaten: 0,
+            visualize: function (color) {
+                drawCircle(this.x, this.y, this.r, color);
             }
         };
     }
 // Function to draw circles
-    function drawCircle(x, y, radius) {
-        ctx.arc(x, y, radius, 0, 2 * Math.PI);
-        ctx.fillStyle = 'yellow';
+    function drawCircle(x, y, r, color) {
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 2 * Math.PI);
+        ctx.fillStyle = color;
         ctx.fill();
-
     }
 //Create the two players
     var playerOne = createPlayer(((canvasPlayer.width / 3) * 1), (canvasPlayer.height / 2), 50, 5);
     var playerTwo = createPlayer(((canvasPlayer.width / 3) * 2), (canvasPlayer.height / 2), 50, 5);
+
+    var playerOneImg = document.getElementById("player-one"),
+        playerTwoImg = document.getElementById("player-two");
 
 //Event Listeners
     window.addEventListener("keydown", keysPressed, false);
@@ -87,13 +91,41 @@ window.addEventListener('load', function() {
 
     }
 
+//Colliding with other objects
+function isPlayerCollidingWithOtherObject(player, otherObject){
+          var user = {
+            x: player.x,
+            y: player.y,
+            r: player.r
+          },
+            other = {
+              x: otherObject.x,
+              y: otherObject.y,
+              r: otherObject.r
+            };
+          var d = Math.sqrt((user.x - other.x) * (user.x - other.x) + 
+                            (user.y - other.y) * (user.y - other.y));
+          return d <= (user.r + other.r);
+}
+
+function CollidingWithCookies(player, cookies) {
+    cookies.forEach(function (cookie, index) {
+            if(isPlayerCollidingWithOtherObject(player, cookie)){
+                cookieContext.clearRect(cookie.x, cookie.y, cookie.r, cookie.r);
+                cookies.splice(index, 1);
+                player.r += 1;
+                player.cookiesEaten += 1;
+            }
+        });
+}
+
 //creating cookies
 function createCookie(options) {
     var cookie = {
         context: options.context,
-        cookieX: options.x,
-        cookieY: options.y,
-        cookieRadius: options.r
+        x: options.x,
+        y: options.y,
+        r: options.r
     };
 
     return cookie;
@@ -102,6 +134,8 @@ function createCookie(options) {
 //new canvas layer for the cookies
 var cookieCanvas = document.getElementById("balls-canvas"),
     cookieContext = cookieCanvas.getContext("2d");
+
+var cookies = [];
 
 var cookieImg = document.getElementById("cookie-food");
 
@@ -116,23 +150,66 @@ var spawnCookieCountFrames = 0;
 
         updateCoordinates(1); //this might need a chnage
 
-        playerOne.visualize();
-        playerTwo.visualize();
+        playerOne.visualize("orange");
+        playerTwo.visualize("green");
+
+        ctx.drawImage(playerOneImg, playerOne.x - playerOne.r, playerOne.y - playerOne.r,
+                        playerOne.r * 2, playerOne.r * 2);
+        
+        ctx.drawImage(playerTwoImg, playerTwo.x - playerTwo.r, playerTwo.y - playerTwo.r,
+                        playerTwo.r * 2, playerTwo.r * 2);
         
         //Spawning cookies after 120 frames
-        //There is a bug which will be fixed -> some cookies are spawning in the walls of the canvas
+        //No sure if all the cookies will spawn valid
         spawnCookieCountFrames += 1;
         if(spawnCookieCountFrames > 120){
             var cookie = createCookie({
                 context: cookieContext,
-                x: Math.random() * cookieCanvas.width - 10,
+                x: Math.random() * cookieCanvas.width,
                 y: Math.random() * cookieCanvas.height,
-                r: 10
+                r: 40
             });
             cookieContext.beginPath();
-            cookieContext.drawImage(cookieImg, cookie.cookieX, cookie.cookieY,
-                                    cookie.cookieRadius * 4, cookie.cookieRadius * 4);
+
+            cookieContext.drawImage(cookieImg, cookie.x, cookie.y,
+                                    cookie.r, cookie.r);
+            
+            //Adding every spawn cookie to an array
+            cookies.push(cookie);
+            
             spawnCookieCountFrames = 0;
+        }
+
+        //Are player colliding with cookies
+        CollidingWithCookies(playerOne, cookies);
+        CollidingWithCookies(playerTwo, cookies);
+
+        //Are player colliding with other player
+        if(isPlayerCollidingWithOtherObject(playerOne, playerTwo)){
+            var elementToShowWinner = document.getElementById("show-winner");
+            if(playerOne.r > playerTwo.r){
+                //player one winner
+                ctx.clearRect(0, 0, canvasPlayer.width, canvasPlayer.height);
+                cookieContext.clearRect(0, 0, cookieCanvas.width, cookieCanvas.height);
+                elementToShowWinner.firstElementChild.innerHTML += "Player 1";
+                elementToShowWinner.lastElementChild.innerHTML += playerOne.cookiesEaten;
+                elementToShowWinner.style.display = "block";
+                elementToShowWinner.appendChild(playerOneImg);
+                playerOneImg.style.display = "block";
+                return;
+            } else if(playerOne.r < playerTwo.r){
+                //player two winner
+                ctx.clearRect(0, 0, canvasPlayer.width, canvasPlayer.height);
+                cookieContext.clearRect(0, 0, cookieCanvas.width, cookieCanvas.height);
+                elementToShowWinner.firstElementChild.innerHTML += "Player 2";
+                elementToShowWinner.lastElementChild.innerHTML += playerTwo.cookiesEaten;
+                elementToShowWinner.style.display = "block";
+                elementToShowWinner.appendChild(playerTwoImg);
+                playerTwoImg.style.display = "inline";
+                return;
+            } else {
+                // if radiuses equal playerOne should cannot go over playerTwo
+            }
         }
 
         ctx.closePath();

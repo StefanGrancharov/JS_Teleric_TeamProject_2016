@@ -22,4 +22,17 @@ body{
 
 canvas{
   position: absolute;
+  border: 1px solid black;
+}
+
+#show-winner{
+  display: none;
+  position: absolute;
+  top: 260px;
+  left: 532px;
+}
+
+img{
+  width: 100px;
+  height: 100px;
 }
