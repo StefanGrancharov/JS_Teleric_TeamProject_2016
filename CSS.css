@@ -55,3 +55,14 @@ img{
 #score #score-table li{
   margin-bottom: 10px;
 }
+
+#timer {
+  border: 3px solid #424242;
+  border-radius: 15px;
+  position: fixed;
+  top: 130px;
+  right: 15px;
+  width: 120px;
+  height: 60px;
+  padding-left: 10px;
+}

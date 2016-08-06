@@ -149,6 +149,13 @@ var spawnCookieCountFrames = 0;
 var firstPlayerScore = document.getElementById("score-table").firstElementChild.nextElementSibling,
     secondPlayerScore = document.getElementById("score-table").lastElementChild;
 
+//side timer for game
+var seconds = +0;
+window.setInterval(function timer() {
+    seconds += 1;
+}, 1000);
+var gameTimer = document.getElementById("timer").firstElementChild;
+
 //GameLoops
     function gameLoop() {
 
@@ -186,6 +193,8 @@ var firstPlayerScore = document.getElementById("score-table").firstElementChild.
             
             spawnCookieCountFrames = 0;
         }
+        //Refreshing Timer
+        gameTimer.innerHTML = "Timer: " + seconds + " seconds";
 
         //Are player colliding with cookies
         CollidingWithCookies(playerOne, cookies);
