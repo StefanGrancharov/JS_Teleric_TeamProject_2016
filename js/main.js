@@ -9,7 +9,7 @@ window.addEventListener('load', function() {
     var globalID = 0;
 
 // Class to create instance of players
-    function createPlayer(x, y, r, s) {
+    function createPlayer(x, y, r, s, keys) {
         ++globalID;
 
         return {
@@ -19,6 +19,7 @@ window.addEventListener('load', function() {
             r: r,
             speed: s,
             cookiesEaten: 0,
+            keyDirections: keys,
             visualize: function (color) {
                 drawCircle(this.x, this.y, this.r, color);
             }
@@ -31,15 +32,13 @@ window.addEventListener('load', function() {
         ctx.fillStyle = color;
         ctx.fill();
     }
+
 //Create the two players
-    var playerOne = createPlayer(((canvasPlayer.width / 3) * 1), (canvasPlayer.height / 2), 50, 5);
-    var playerTwo = createPlayer(((canvasPlayer.width / 3) * 2), (canvasPlayer.height / 2), 50, 5);
+    var playerOne = createPlayer(((canvasPlayer.width / 3) * 1), (canvasPlayer.height / 2), 50, 5, [37, 38, 39, 40]);
+    var playerTwo = createPlayer(((canvasPlayer.width / 3) * 2), (canvasPlayer.height / 2), 50, 5, [65, 87, 68, 83]);
 
     var playerOneImg = document.getElementById("player-one"),
         playerTwoImg = document.getElementById("player-two");
-
-//Players initial score
-    var initialScore = 0;
 
 //Event Listeners
     window.addEventListener("keydown", keysPressed, false);
@@ -61,37 +60,20 @@ window.addEventListener('load', function() {
     }
 
 //Function to update the coordinates
-    function updateCoordinates(modifier) {
-
-        if (keys[37]) { // Player holding left
-            playerOne.x -= playerOne.speed * modifier;
+    function updateCoordinates(player, modifier) {
+        //37 l, 38 u, 39 r, 40 d;  65 l, 87 u, 68 r, 83 d
+        if (keys[player.keyDirections[0]]) { // Player holding left
+            player.x -= player.speed * modifier.left;
         }
-        if (keys[38]) { // Player holding up
-            playerOne.y -= playerOne.speed * modifier;
+        if (keys[player.keyDirections[1]]) { // Player holding up
+            player.y -= player.speed * modifier.up;
         }
-        if (keys[39]) { // Player holding right
-            playerOne.x += playerOne.speed * modifier;
+        if (keys[player.keyDirections[2]]) { // Player holding right
+            player.x += player.speed * modifier.right;
         }
-        if (keys[40]) { // Player holding down
-            playerOne.y += playerOne.speed * modifier;
+        if (keys[player.keyDirections[3]]) { // Player holding down
+            player.y += player.speed * modifier.down;
         }
-
-
-
-        if (keys[65]) { // Player holding left
-            playerTwo.x -= playerTwo.speed * modifier;
-        }
-        if (keys[87]) { // Player holding up
-            playerTwo.y -= playerTwo.speed * modifier;
-        }
-        if (keys[68]) { // Player holding right
-            playerTwo.x += playerTwo.speed * modifier;
-        }
-        if (keys[83]) { // Player holding down
-            playerTwo.y += playerTwo.speed * modifier;
-        }
-
-
     }
 
 //Colliding with other objects
@@ -120,6 +102,45 @@ function CollidingWithCookies(player, cookies) {
                 player.cookiesEaten += 1;
             }
         });
+}
+
+function CollidingWithWalls(player) {
+        if(0 + player.r >= player.x){
+            updateCoordinates(player, {
+                "left": 0,
+                "right": 1,
+                "up": 1,
+                "down": 1
+            });
+        } else if(0 + player.r >= player.y){
+            updateCoordinates(player, {
+                "left": 1,
+                "right": 1,
+                "up": 0,
+                "down": 1
+            });
+        } else if(canvasPlayer.width - player.r <= player.x){
+            updateCoordinates(player, {
+                "left": 1,
+                "right": 0,
+                "up": 1,
+                "down": 1
+            });
+        } else if(canvasPlayer.height - player.r <= player.y){
+            updateCoordinates(player, {
+                "left": 1,
+                "right": 1,
+                "up": 1,
+                "down": 0
+            });
+        } else {
+            updateCoordinates(player, {
+                "left": 1,
+                "right": 1,
+                "up": 1,
+                "down": 1
+            }); //this might need a change
+        }
 }
 
 //creating cookies
@@ -162,7 +183,9 @@ var gameTimer = document.getElementById("timer").firstElementChild;
         ctx.clearRect(0, 0, canvasPlayer.width, canvasPlayer.height);
         ctx.beginPath();
 
-        updateCoordinates(1); //this might need a chnage
+        //In this function is updating the coordinates of the players
+        CollidingWithWalls(playerOne);
+        CollidingWithWalls(playerTwo);
 
         playerOne.visualize("orange");
         playerTwo.visualize("green");
@@ -174,13 +197,12 @@ var gameTimer = document.getElementById("timer").firstElementChild;
                         playerTwo.r * 2, playerTwo.r * 2);
         
         //Spawning cookies after 120 frames
-        //No sure if all the cookies will spawn valid
         spawnCookieCountFrames += 1;
         if(spawnCookieCountFrames > 120){
             var cookie = createCookie({
                 context: cookieContext,
-                x: Math.random() * cookieCanvas.width,
-                y: Math.random() * cookieCanvas.height,
+                x: Math.random() * (cookieCanvas.width - 40),
+                y: Math.random() * (cookieCanvas.height - 40),
                 r: 40
             });
             cookieContext.beginPath();
