@@ -8,6 +8,10 @@ window.addEventListener('load', function() {
 // ID for the player, might not be necessary
     var globalID = 0;
 
+//Load sound effects
+    var beepOnEatenCookie = new Audio();
+    beepOnEatenCookie.src = "sound/beep.mp3";
+
 // Class to create instance of players
     function createPlayer(x, y, r, s, keys) {
         ++globalID;
@@ -100,6 +104,7 @@ function CollidingWithCookies(player, cookies) {
                 cookies.splice(index, 1);
                 player.r += 1;
                 player.cookiesEaten += 1;
+                beepOnEatenCookie.play();
             }
         });
 }
