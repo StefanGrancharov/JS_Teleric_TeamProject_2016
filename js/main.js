@@ -224,9 +224,17 @@ var gameTimer = document.getElementById("timer").firstElementChild;
         CollidingWithCookies(playerTwo, cookies);
         secondPlayerScore.innerHTML = "Player 2: " + playerTwo.cookiesEaten;
 
+
+        var elementToShowWinner = document.getElementById("show-winner");
+        var restartButton = document.getElementById("restart-game");
+
+        restartButton.addEventListener("click", function () {
+            window.location.href = "index.html";
+        }, false);
+
         //Are player colliding with other player
         if(isPlayerCollidingWithOtherObject(playerOne, playerTwo)){
-            var elementToShowWinner = document.getElementById("show-winner");
+            
             if(playerOne.r > playerTwo.r){
                 //player one winner
                 ctx.clearRect(0, 0, canvasPlayer.width, canvasPlayer.height);
@@ -235,7 +243,9 @@ var gameTimer = document.getElementById("timer").firstElementChild;
                 elementToShowWinner.lastElementChild.innerHTML += playerOne.cookiesEaten;
                 elementToShowWinner.style.display = "block";
                 elementToShowWinner.appendChild(playerOneImg);
-                playerOneImg.style.display = "block";
+                elementToShowWinner.appendChild(restartButton);
+                playerOneImg.style.display = "inline-block";
+                restartButton.style.display = "inline-block";
                 return;
             } else if(playerOne.r < playerTwo.r){
                 //player two winner
@@ -245,12 +255,45 @@ var gameTimer = document.getElementById("timer").firstElementChild;
                 elementToShowWinner.lastElementChild.innerHTML += playerTwo.cookiesEaten;
                 elementToShowWinner.style.display = "block";
                 elementToShowWinner.appendChild(playerTwoImg);
-                playerTwoImg.style.display = "inline";
+                elementToShowWinner.appendChild(restartButton);
+                playerTwoImg.style.display = "inline-block";
+                restartButton.style.display = "inline-block";
                 return;
             } else {
-                // if radiuses equal playerOne should cannot go over playerTwo
+                // Verify that two players not going over each other
             }
         }
+
+        //Deciding winner depending on timer
+        if(seconds >= 120){
+                ctx.clearRect(0, 0, canvasPlayer.width, canvasPlayer.height);
+                cookieContext.clearRect(0, 0, cookieCanvas.width, cookieCanvas.height);
+
+                if(playerOne.cookiesEaten > playerTwo.cookiesEaten){
+                    elementToShowWinner.firstElementChild.innerHTML += "Player 1";
+                    elementToShowWinner.lastElementChild.innerHTML += playerOne.cookiesEaten;
+                    elementToShowWinner.style.display = "block";
+                    elementToShowWinner.appendChild(playerOneImg);
+                    elementToShowWinner.appendChild(restartButton);
+                    playerOneImg.style.display = "inline-block";
+                    restartButton.style.display = "inline-block";
+                } else if(playerOne.cookiesEaten < playerTwo.cookiesEaten){
+                    elementToShowWinner.firstElementChild.innerHTML += "Player 2";
+                    elementToShowWinner.lastElementChild.innerHTML += playerTwo.cookiesEaten;
+                    elementToShowWinner.style.display = "block";
+                    elementToShowWinner.appendChild(playerTwoImg);
+                    elementToShowWinner.appendChild(restartButton);
+                    playerTwoImg.style.display = "inline-block";
+                    restartButton.style.display = "inline-block";
+                } else {
+                    elementToShowWinner.firstElementChild.innerHTML = "It's a draw";
+                    elementToShowWinner.lastElementChild.innerHTML += playerTwo.cookiesEaten;
+                    elementToShowWinner.appendChild(restartButton);
+                    elementToShowWinner.style.display = "block";
+                    restartButton.style.display = "inline-block";
+                }
+                return;
+            }
 
         ctx.closePath();
 
