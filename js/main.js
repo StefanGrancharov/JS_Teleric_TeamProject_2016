@@ -1,18 +1,18 @@
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
     'use strict';
 
-// Create the canvas
+    // Create the canvas
     var canvasPlayer = document.getElementById('player-canvas');
     var ctx = canvasPlayer.getContext('2d');
 
-// ID for the player, might not be necessary
+    // ID for the player, might not be necessary
     var globalID = 0;
 
-//Load sound effects
+    //Load sound effects
     var beepOnEatenCookie = new Audio();
     beepOnEatenCookie.src = "sound/beep.mp3";
 
-// Class to create instance of players
+    // Class to create instance of players
     function createPlayer(x, y, r, s, keys) {
         ++globalID;
 
@@ -29,7 +29,7 @@ window.addEventListener('load', function() {
             }
         };
     }
-// Function to draw circles
+    // Function to draw circles
     function drawCircle(x, y, r, color) {
         ctx.beginPath();
         ctx.arc(x, y, r, 0, 2 * Math.PI);
@@ -37,14 +37,14 @@ window.addEventListener('load', function() {
         ctx.fill();
     }
 
-//Create the two players
-    var playerOne = createPlayer(((canvasPlayer.width / 3) * 1), (canvasPlayer.height / 2), 50, 5, [37, 38, 39, 40]);
-    var playerTwo = createPlayer(((canvasPlayer.width / 3) * 2), (canvasPlayer.height / 2), 50, 5, [65, 87, 68, 83]);
+    //Create the two players
+    var playerOne = createPlayer(((canvasPlayer.width / 3) * 1), (canvasPlayer.height / 2), 50, 10, [37, 38, 39, 40]);
+    var playerTwo = createPlayer(((canvasPlayer.width / 3) * 2), (canvasPlayer.height / 2), 50, 10, [65, 87, 68, 83]);
 
     var playerOneImg = document.getElementById("player-one"),
         playerTwoImg = document.getElementById("player-two");
 
-//Event Listeners
+    //Event Listeners
     window.addEventListener("keydown", keysPressed, false);
     window.addEventListener("keyup", keysReleased, false);
 
@@ -63,147 +63,140 @@ window.addEventListener('load', function() {
         keys[e.keyCode] = false;
     }
 
-//Function to update the coordinates
-    function updateCoordinates(player, modifier) {
+    //Function to update the coordinates
+    function updateCoordinates(player) {
+
+
         //37 l, 38 u, 39 r, 40 d;  65 l, 87 u, 68 r, 83 d
         if (keys[player.keyDirections[0]]) { // Player holding left
-            player.x -= player.speed * modifier.left;
+            player.x -= player.speed;
         }
         if (keys[player.keyDirections[1]]) { // Player holding up
-            player.y -= player.speed * modifier.up;
+            player.y -= player.speed;
         }
         if (keys[player.keyDirections[2]]) { // Player holding right
-            player.x += player.speed * modifier.right;
+            player.x += player.speed;
         }
         if (keys[player.keyDirections[3]]) { // Player holding down
-            player.y += player.speed * modifier.down;
+            player.y += player.speed;
         }
+        CollidingWithWalls(player);
     }
 
-//Colliding with other objects
-function isPlayerCollidingWithOtherObject(player, otherObject){
-          var user = {
+    //Colliding with other objects
+    function isPlayerCollidingWithOtherObject(player, otherObject) {
+        var user = {
             x: player.x,
             y: player.y,
             r: player.r
-          },
+        },
             other = {
-              x: otherObject.x,
-              y: otherObject.y,
-              r: otherObject.r
+                x: otherObject.x,
+                y: otherObject.y,
+                r: otherObject.r
             };
-          var d = Math.sqrt((user.x - other.x) * (user.x - other.x) + 
-                            (user.y - other.y) * (user.y - other.y));
-          return d <= (user.r + other.r);
-}
+        var d = Math.sqrt((user.x - other.x) * (user.x - other.x) +
+            (user.y - other.y) * (user.y - other.y));
+        return d <= (user.r + other.r);
+    }
 
-function CollidingWithCookies(player, cookies) {
-    cookies.forEach(function (cookie, index) {
-            if(isPlayerCollidingWithOtherObject(player, cookie)){
+    function CollidingWithCookies(player, cookies) {
+        cookies.forEach(function (cookie, index) {
+            if (isPlayerCollidingWithOtherObject(player, cookie)) {
                 cookieContext.clearRect(cookie.x, cookie.y, cookie.r, cookie.r);
                 cookies.splice(index, 1);
                 player.r += 1;
                 player.cookiesEaten += 1;
+                if (player.speed > 2) {
+                    player.speed > 7 ? (player.speed -= 0.3) : (player.speed -= 0.1);
+                }
                 beepOnEatenCookie.play();
             }
         });
-}
+    }
+    function CollidingWithWalls(player) {
 
-function CollidingWithWalls(player) {
-        if(0 + player.r >= player.x){
-            updateCoordinates(player, {
-                "left": 0,
-                "right": 1,
-                "up": 1,
-                "down": 1
-            });
-        } else if(0 + player.r >= player.y){
-            updateCoordinates(player, {
-                "left": 1,
-                "right": 1,
-                "up": 0,
-                "down": 1
-            });
-        } else if(canvasPlayer.width - player.r <= player.x){
-            updateCoordinates(player, {
-                "left": 1,
-                "right": 0,
-                "up": 1,
-                "down": 1
-            });
-        } else if(canvasPlayer.height - player.r <= player.y){
-            updateCoordinates(player, {
-                "left": 1,
-                "right": 1,
-                "up": 1,
-                "down": 0
-            });
-        } else {
-            updateCoordinates(player, {
-                "left": 1,
-                "right": 1,
-                "up": 1,
-                "down": 1
-            }); //this might need a change
+        //checking future coordinates
+        if (player.x - player.r < 0 || player.x + player.r > canvasPlayer.width ||
+            player.y - player.r < 0 || player.y + player.r > canvasPlayer.height) {
+
+            if (0 + player.r >= player.x) {
+                player.x += player.speed;
+            }
+            if (0 + player.r >= player.y) {
+                player.y += player.speed;
+            }
+            if (canvasPlayer.width - player.r <= player.x) {
+                player.x -= player.speed;
+            }
+            if (canvasPlayer.height - player.r <= player.y) {
+                player.y -= player.speed;
+            }
         }
-}
-
-//creating cookies
-function createCookie(options) {
-    var cookie = {
-        context: options.context,
-        x: options.x,
-        y: options.y,
-        r: options.r
-    };
-
-    return cookie;
-}
-
-//new canvas layer for the cookies
-var cookieCanvas = document.getElementById("balls-canvas"),
-    cookieContext = cookieCanvas.getContext("2d");
-
-var cookies = [];
-
-var cookieImg = document.getElementById("cookie-food");
-
-//counting frames to spawn new cookie
-var spawnCookieCountFrames = 0;
+        else {
+            return;
+        }
+    }
 
 
-var firstPlayerScore = document.getElementById("score-table").firstElementChild.nextElementSibling,
-    secondPlayerScore = document.getElementById("score-table").lastElementChild;
+    //creating cookies
+    function createCookie(options) {
+        var cookie = {
+            context: options.context,
+            x: options.x,
+            y: options.y,
+            r: options.r
+        };
 
-//side timer for game
-var seconds = +0;
-window.setInterval(function timer() {
-    seconds += 1;
-}, 1000);
-var gameTimer = document.getElementById("timer").firstElementChild;
+        return cookie;
+    }
 
-//GameLoops
+    //new canvas layer for the cookies
+    var cookieCanvas = document.getElementById("balls-canvas"),
+        cookieContext = cookieCanvas.getContext("2d");
+
+    var cookies = [];
+
+    var cookieImg = document.getElementById("cookie-food");
+
+    //counting frames to spawn new cookie
+    var spawnCookieCountFrames = 0;
+
+
+    var firstPlayerScore = document.getElementById("score-table").firstElementChild.nextElementSibling,
+        secondPlayerScore = document.getElementById("score-table").lastElementChild;
+
+    //side timer for game
+    var seconds = +0;
+    window.setInterval(function timer() {
+        seconds += 1;
+    }, 1000);
+    var gameTimer = document.getElementById("timer").firstElementChild;
+
+    //GameLoops
     function gameLoop() {
 
         ctx.clearRect(0, 0, canvasPlayer.width, canvasPlayer.height);
         ctx.beginPath();
 
         //In this function is updating the coordinates of the players
-        CollidingWithWalls(playerOne);
-        CollidingWithWalls(playerTwo);
+
+        updateCoordinates(playerOne);
+        updateCoordinates(playerTwo);
+
 
         playerOne.visualize("orange");
         playerTwo.visualize("green");
 
         ctx.drawImage(playerOneImg, playerOne.x - playerOne.r, playerOne.y - playerOne.r,
-                        playerOne.r * 2, playerOne.r * 2);
-        
+            playerOne.r * 2, playerOne.r * 2);
+
         ctx.drawImage(playerTwoImg, playerTwo.x - playerTwo.r, playerTwo.y - playerTwo.r,
-                        playerTwo.r * 2, playerTwo.r * 2);
-        
-        //Spawning cookies after 120 frames
+            playerTwo.r * 2, playerTwo.r * 2);
+
+        //Spawning cookies after 90 frames
         spawnCookieCountFrames += 1;
-        if(spawnCookieCountFrames > 120){
+        if (spawnCookieCountFrames > 90) {
             var cookie = createCookie({
                 context: cookieContext,
                 x: Math.random() * (cookieCanvas.width - 40),
@@ -213,11 +206,11 @@ var gameTimer = document.getElementById("timer").firstElementChild;
             cookieContext.beginPath();
 
             cookieContext.drawImage(cookieImg, cookie.x, cookie.y,
-                                    cookie.r, cookie.r);
-            
+                cookie.r, cookie.r);
+
             //Adding every spawn cookie to an array
             cookies.push(cookie);
-            
+
             spawnCookieCountFrames = 0;
         }
         //Refreshing Timer
@@ -238,9 +231,9 @@ var gameTimer = document.getElementById("timer").firstElementChild;
         }, false);
 
         //Are player colliding with other player
-        if(isPlayerCollidingWithOtherObject(playerOne, playerTwo)){
-            
-            if(playerOne.r > playerTwo.r){
+        if (isPlayerCollidingWithOtherObject(playerOne, playerTwo)) {
+
+            if (playerOne.r > playerTwo.r) {
                 //player one winner
                 ctx.clearRect(0, 0, canvasPlayer.width, canvasPlayer.height);
                 cookieContext.clearRect(0, 0, cookieCanvas.width, cookieCanvas.height);
@@ -252,7 +245,7 @@ var gameTimer = document.getElementById("timer").firstElementChild;
                 playerOneImg.style.display = "inline-block";
                 restartButton.style.display = "inline-block";
                 return;
-            } else if(playerOne.r < playerTwo.r){
+            } else if (playerOne.r < playerTwo.r) {
                 //player two winner
                 ctx.clearRect(0, 0, canvasPlayer.width, canvasPlayer.height);
                 cookieContext.clearRect(0, 0, cookieCanvas.width, cookieCanvas.height);
@@ -270,35 +263,35 @@ var gameTimer = document.getElementById("timer").firstElementChild;
         }
 
         //Deciding winner depending on timer
-        if(seconds >= 120){
-                ctx.clearRect(0, 0, canvasPlayer.width, canvasPlayer.height);
-                cookieContext.clearRect(0, 0, cookieCanvas.width, cookieCanvas.height);
+        if (seconds >= 120) {
+            ctx.clearRect(0, 0, canvasPlayer.width, canvasPlayer.height);
+            cookieContext.clearRect(0, 0, cookieCanvas.width, cookieCanvas.height);
 
-                if(playerOne.cookiesEaten > playerTwo.cookiesEaten){
-                    elementToShowWinner.firstElementChild.innerHTML += "Player 1";
-                    elementToShowWinner.lastElementChild.innerHTML += playerOne.cookiesEaten;
-                    elementToShowWinner.style.display = "block";
-                    elementToShowWinner.appendChild(playerOneImg);
-                    elementToShowWinner.appendChild(restartButton);
-                    playerOneImg.style.display = "inline-block";
-                    restartButton.style.display = "inline-block";
-                } else if(playerOne.cookiesEaten < playerTwo.cookiesEaten){
-                    elementToShowWinner.firstElementChild.innerHTML += "Player 2";
-                    elementToShowWinner.lastElementChild.innerHTML += playerTwo.cookiesEaten;
-                    elementToShowWinner.style.display = "block";
-                    elementToShowWinner.appendChild(playerTwoImg);
-                    elementToShowWinner.appendChild(restartButton);
-                    playerTwoImg.style.display = "inline-block";
-                    restartButton.style.display = "inline-block";
-                } else {
-                    elementToShowWinner.firstElementChild.innerHTML = "It's a draw";
-                    elementToShowWinner.lastElementChild.innerHTML += playerTwo.cookiesEaten;
-                    elementToShowWinner.appendChild(restartButton);
-                    elementToShowWinner.style.display = "block";
-                    restartButton.style.display = "inline-block";
-                }
-                return;
+            if (playerOne.cookiesEaten > playerTwo.cookiesEaten) {
+                elementToShowWinner.firstElementChild.innerHTML += "Player 1";
+                elementToShowWinner.lastElementChild.innerHTML += playerOne.cookiesEaten;
+                elementToShowWinner.style.display = "block";
+                elementToShowWinner.appendChild(playerOneImg);
+                elementToShowWinner.appendChild(restartButton);
+                playerOneImg.style.display = "inline-block";
+                restartButton.style.display = "inline-block";
+            } else if (playerOne.cookiesEaten < playerTwo.cookiesEaten) {
+                elementToShowWinner.firstElementChild.innerHTML += "Player 2";
+                elementToShowWinner.lastElementChild.innerHTML += playerTwo.cookiesEaten;
+                elementToShowWinner.style.display = "block";
+                elementToShowWinner.appendChild(playerTwoImg);
+                elementToShowWinner.appendChild(restartButton);
+                playerTwoImg.style.display = "inline-block";
+                restartButton.style.display = "inline-block";
+            } else {
+                elementToShowWinner.firstElementChild.innerHTML = "It's a draw";
+                elementToShowWinner.lastElementChild.innerHTML += playerTwo.cookiesEaten;
+                elementToShowWinner.appendChild(restartButton);
+                elementToShowWinner.style.display = "block";
+                restartButton.style.display = "inline-block";
             }
+            return;
+        }
 
         ctx.closePath();
 
