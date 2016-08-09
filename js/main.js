@@ -117,9 +117,9 @@ window.addEventListener('load', function () {
         return d <= Math.abs(user.r + other.r - 10);
     }
 
-    function CollidingWithCookies2(player, cookies) {
+    function CollidingWithCookies(player, cookies) {
         cookies.forEach(function (cookie, index) {
-            if (isPlayerCollidingWithOtherObject(player, cookie)) {
+            if (isPlayerCollidingWithOtherObject2(player, cookie)) {
                 cookieContext.clearRect(cookie.x, cookie.y, cookie.r, cookie.r);
                 cookies.splice(index, 1);
                 player.r += 1;
@@ -206,7 +206,7 @@ window.addEventListener('load', function () {
         playerTwo.visualize("green");
 
         ctx.drawImage(playerOneImg, playerOne.x - playerOne.r, playerOne.y - playerOne.r,
-            playerOne.r * 2, playerOne.r * 2);
+            playerOne.r *2, playerOne.r * 2);
 
         ctx.drawImage(playerTwoImg, playerTwo.x - playerTwo.r, playerTwo.y - playerTwo.r,
             playerTwo.r * 2, playerTwo.r * 2);
