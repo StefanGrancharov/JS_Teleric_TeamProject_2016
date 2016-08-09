@@ -83,7 +83,7 @@ window.addEventListener('load', function () {
         CollidingWithWalls(player);
     }
 
-    //Colliding with other objects
+    //Colliding with other Player (eating the player)
     function isPlayerCollidingWithOtherObject(player, otherObject) {
         var user = {
             x: player.x,
@@ -97,10 +97,27 @@ window.addEventListener('load', function () {
             };
         var d = Math.sqrt((user.x - other.x) * (user.x - other.x) +
             (user.y - other.y) * (user.y - other.y));
-        return d <= (user.r + other.r);
+        return d <= Math.abs(user.r - other.r + 14);
     }
 
-    function CollidingWithCookies(player, cookies) {
+    //Colliding with other consumeables ( Cookies )
+    function isPlayerCollidingWithOtherObject2(player, otherObject) {
+        var user = {
+            x: player.x,
+            y: player.y,
+            r: player.r
+        },
+            other = {
+                x: otherObject.x,
+                y: otherObject.y,
+                r: otherObject.r
+            };
+        var d = Math.sqrt((user.x - other.x) * (user.x - other.x) +
+            (user.y - other.y) * (user.y - other.y));
+        return d <= Math.abs(user.r + other.r - 10);
+    }
+
+    function CollidingWithCookies2(player, cookies) {
         cookies.forEach(function (cookie, index) {
             if (isPlayerCollidingWithOtherObject(player, cookie)) {
                 cookieContext.clearRect(cookie.x, cookie.y, cookie.r, cookie.r);

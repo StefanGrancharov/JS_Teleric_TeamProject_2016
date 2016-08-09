@@ -1,28 +1,56 @@
 body{
-  background-color: lightcyan;
+    background-color: lightcyan;
+    background-image: url("back1.jpg");
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    opacity: 0.8
 
 }
 
 #wrapper {
-  width: 1065px;
+    width: 1065px;
     height: 630px;
     border: 3px solid #424242;
     border-radius: 15px;
     padding: 10px;
+    opacity: 1.0;
+    margin:  auto;
+}
+
+main {
+    background-color: azure;
+}
+
+header{
+  background-image: url("back2.jpg");
+  background-size: 100% auto;
+  height: 50px
 }
 
 #title {
-    background-color: #809080;
+    
+    
+    background-size: 100% auto;
     text-align: center;
     color: brown;
     padding: 0px 0px 0px 0px;
+    padding-top: 8px;
     margin-top: 10px;
 }
 
+
+
 canvas{
+  
   position: absolute;
   border: 1px solid black;
 }
+
+
+#player-canvas{
+  background-color: azure;
+}
+
 
 #show-winner{
   display: none;
@@ -34,6 +62,11 @@ canvas{
 img{
   width: 100px;
   height: 100px;
+}
+
+aside{
+  background-color: azure;
+  opacity: 0.9;
 }
 
 #score {
@@ -50,6 +83,8 @@ img{
 #score #score-table{
   padding: 0;
   list-style-type: none;
+  background-color: azure;
+  opacity: 0.9;
 }
 
 #score #score-table li{
