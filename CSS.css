@@ -1,7 +1,7 @@
 body{
     background-color: lightcyan;
-    background-image: url("back1.jpg");
-    background-size: 100% auto;
+    background-image: url("images/back1.jpg");
+    background-size: 110% auto;
     background-repeat: no-repeat;
     opacity: 0.8
 
@@ -22,7 +22,7 @@ main {
 }
 
 header{
-  background-image: url("back2.jpg");
+  background-image: url("images/back2.jpg");
   background-size: 100% auto;
   height: 50px
 }
@@ -38,7 +38,79 @@ header{
     margin-top: 10px;
 }
 
+#start-window{
+  border: 3px solid #424242;
+  border-radius: 15px;
+  position: fixed;
+  margin: 50px 320px;
+  z-index: 99;
+  width: 400px;
+  height: 400px;
+  
+}
 
+#start-h2{
+  padding: 0px 0px 0px 0px;
+  text-align: center;
+}
+
+.label{
+   box-shadow: 0px 0px 20px lightcoral;
+   padding-left: 20px;
+   padding-right: 20px;
+   margin: 10px 0px 10px 50px;
+}
+
+#controlers{
+  padding-left: 20px;
+}
+
+.hide{
+  display: none;
+}
+
+#start{
+  background-color: orange;
+  height: 30px;
+  width: 60px;
+  border-radius: 4px;
+  margin-left: 160px;
+  padding-top: 5px;
+  padding-left: 15px;
+
+}
+
+#start:hover{
+  background-color: lightsalmon;
+  box-shadow: 0px 0px 15px red;
+   cursor: alias;
+}
+
+#start1{
+  padding: 0px 0px 0px 0px;
+  margin:  0px 0px 0px 0px;
+  font-family: "Consolas", sans-serif;
+  color: white;
+  font-size: 20px;
+}
+
+#youtube{
+  
+  background-image: url("images/youtube.jpg");
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  height: 30px;
+  width: 60px;
+  border-radius: 4px;
+  margin-top: 20px;
+  margin-left: 160px;
+  padding-top: 5px;
+  padding-left: 15px;
+}
+
+#youtube:hover{
+  box-shadow: 0px 0px 15px red;
+}
 
 canvas{
   

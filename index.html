@@ -9,9 +9,6 @@
 </head>
 
 
-<!--JQuery Library loading-->
-<script src="JQuery.js"></script>
-
 <!--********************** BODY STARTS HERE ***********************-->
 
 <body>
@@ -25,6 +22,8 @@
             <h1 id="title">Cookie Monster</h1>
         </header>
 
+        
+
         <main>
             <img src="./images/cookie.png" id="cookie-food" style="display: none" >
             <img src="./images/playerOne.png" id="player-one" style="display: none" >
@@ -32,9 +31,24 @@
             <canvas id="player-canvas" width = "1065" height = "560"></canvas>
             <canvas id="balls-canvas" width = "1065" height = "560"></canvas>
         </main>
+
+        <div id="start-window">
+            <h2 id="start-h2">Please enter your nicknames</h2>
+            <form action="#" method="post">
+                    <input id="Player1" class="label" style="font-size:20px; text-align:left" type="text" placeholder="Player 1" required>
+                    <input id="Player2" class="label" style="font-size:20px; text-align:left" type="text" placeholder="Player 2" required>
+                    <div id="controlers">
+                        <p id="user-controls">To move through the map use keyboard key arrows and "w,s,a,d" keys. Only the bigger Cookie monster can eat other players.</p>
+                    </div>
+                    <div id="start" onclick='preStart()'>
+                        <p id="start1">Play</p>
+                    </div>
+                    
+                        <a id="ytube" href="https://www.youtube.com/watch?v=TjBXGG5bkBo"><div id="youtube" ></div></a>
+                    
+            </form>  
+        </div>
         
-
-
         <div id="show-winner">
             <h1>Winner: </h1>
             <h2>Cookies eaten: </h2>
@@ -53,7 +67,9 @@
             <p>Time: </p>
         </aside>
     </div>
-    <script src="./js/main.js"></script>
+<script src="./js/main.js"></script>
+
+
 
 </body>
 

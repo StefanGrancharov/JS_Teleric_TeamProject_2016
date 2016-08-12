@@ -1,4 +1,10 @@
-window.addEventListener('load', function () {
+
+function preStart(){
+
+    //clearing start window
+    var startWindow = document.getElementById('start-window');
+    startWindow.className = "hide";
+
     'use strict';
 
     // Create the canvas
@@ -9,9 +15,17 @@ window.addEventListener('load', function () {
     var globalID = 0;
 
     //Load sound effects
-    var beepOnEatenCookie = new Audio();
+    var beepOnEatenCookie = new Audio(),
+        onEndOfTheGame = new Audio();
     beepOnEatenCookie.src = "sound/beep.mp3";
+    onEndOfTheGame.src = "sound/nom.mp3";
 
+
+    //Using input names 
+    var player1Name = document.getElementById('Player1').value,
+        player2Name = document.getElementById('Player2').value;
+
+    
     // Class to create instance of players
     function createPlayer(x, y, r, s, keys) {
         ++globalID;
@@ -83,43 +97,35 @@ window.addEventListener('load', function () {
         CollidingWithWalls(player);
     }
 
+    //*****************************************************************
+
+    //Function that calculates distance between two objects on the playground
+    function calculateDistances(player, otherObject) {
+    
+
+        var distance = Math.sqrt((player.x - otherObject.x) * (player.x - otherObject.x) +
+            (player.y - otherObject.y) * (player.y - otherObject.y));
+
+        return distance;
+    }
+
     //Colliding with other Player (eating the player)
-    function isPlayerCollidingWithOtherObject(player, otherObject) {
-        var user = {
-            x: player.x,
-            y: player.y,
-            r: player.r
-        },
-            other = {
-                x: otherObject.x,
-                y: otherObject.y,
-                r: otherObject.r
-            };
-        var d = Math.sqrt((user.x - other.x) * (user.x - other.x) +
-            (user.y - other.y) * (user.y - other.y));
-        return d <= Math.abs(user.r - other.r + 14);
+    function isPlayerCollidingWithOtherPlayer(player1, player2) {
+        var distance = calculateDistances(player1, player2);
+        return distance <= Math.abs(player1.r - player2.r + 14);
     }
 
     //Colliding with other consumeables ( Cookies )
-    function isPlayerCollidingWithOtherObject2(player, otherObject) {
-        var user = {
-            x: player.x,
-            y: player.y,
-            r: player.r
-        },
-            other = {
-                x: otherObject.x,
-                y: otherObject.y,
-                r: otherObject.r
-            };
-        var d = Math.sqrt((user.x - other.x) * (user.x - other.x) +
-            (user.y - other.y) * (user.y - other.y));
-        return d <= Math.abs(user.r + other.r - 10);
+    function isPlayerCollidingWithOtherObject(player, otherObject) {       
+        var distance = calculateDistances(player, otherObject);
+        return distance <= Math.abs(player.r + otherObject.r - 10);
     }
+
+
 
     function CollidingWithCookies(player, cookies) {
         cookies.forEach(function (cookie, index) {
-            if (isPlayerCollidingWithOtherObject2(player, cookie)) {
+            if (isPlayerCollidingWithOtherObject(player, cookie)) {
                 cookieContext.clearRect(cookie.x, cookie.y, cookie.r, cookie.r);
                 cookies.splice(index, 1);
                 player.r += 1;
@@ -190,6 +196,8 @@ window.addEventListener('load', function () {
     }, 1000);
     var gameTimer = document.getElementById("timer").firstElementChild;
 
+
+
     //GameLoops
     function gameLoop() {
 
@@ -211,9 +219,9 @@ window.addEventListener('load', function () {
         ctx.drawImage(playerTwoImg, playerTwo.x - playerTwo.r, playerTwo.y - playerTwo.r,
             playerTwo.r * 2, playerTwo.r * 2);
 
-        //Spawning cookies after 90 frames
+        //Spawning cookies after 30 frames
         spawnCookieCountFrames += 1;
-        if (spawnCookieCountFrames > 90) {
+        if (spawnCookieCountFrames > 30) {
             var cookie = createCookie({
                 context: cookieContext,
                 x: Math.random() * (cookieCanvas.width - 40),
@@ -235,9 +243,9 @@ window.addEventListener('load', function () {
 
         //Are player colliding with cookies
         CollidingWithCookies(playerOne, cookies);
-        firstPlayerScore.innerHTML = "Player 1: " + playerOne.cookiesEaten;
+        firstPlayerScore.innerHTML = player1Name + ": " + playerOne.cookiesEaten;
         CollidingWithCookies(playerTwo, cookies);
-        secondPlayerScore.innerHTML = "Player 2: " + playerTwo.cookiesEaten;
+        secondPlayerScore.innerHTML = player2Name + ": " + playerTwo.cookiesEaten;
 
 
         var elementToShowWinner = document.getElementById("show-winner");
@@ -245,34 +253,38 @@ window.addEventListener('load', function () {
 
         restartButton.addEventListener("click", function () {
             window.location.href = "index.html";
+            
         }, false);
 
         //Are player colliding with other player
-        if (isPlayerCollidingWithOtherObject(playerOne, playerTwo)) {
-
+        if (isPlayerCollidingWithOtherPlayer(playerOne, playerTwo)) {
+            onEndOfTheGame.play();
             if (playerOne.r > playerTwo.r) {
                 //player one winner
                 ctx.clearRect(0, 0, canvasPlayer.width, canvasPlayer.height);
                 cookieContext.clearRect(0, 0, cookieCanvas.width, cookieCanvas.height);
-                elementToShowWinner.firstElementChild.innerHTML += "Player 1";
+                elementToShowWinner.firstElementChild.innerHTML += player1Name;
                 elementToShowWinner.lastElementChild.innerHTML += playerOne.cookiesEaten;
                 elementToShowWinner.style.display = "block";
                 elementToShowWinner.appendChild(playerOneImg);
                 elementToShowWinner.appendChild(restartButton);
                 playerOneImg.style.display = "inline-block";
                 restartButton.style.display = "inline-block";
+                
                 return;
             } else if (playerOne.r < playerTwo.r) {
                 //player two winner
                 ctx.clearRect(0, 0, canvasPlayer.width, canvasPlayer.height);
                 cookieContext.clearRect(0, 0, cookieCanvas.width, cookieCanvas.height);
-                elementToShowWinner.firstElementChild.innerHTML += "Player 2";
+                elementToShowWinner.firstElementChild.innerHTML += player2Name;
                 elementToShowWinner.lastElementChild.innerHTML += playerTwo.cookiesEaten;
                 elementToShowWinner.style.display = "block";
                 elementToShowWinner.appendChild(playerTwoImg);
                 elementToShowWinner.appendChild(restartButton);
                 playerTwoImg.style.display = "inline-block";
                 restartButton.style.display = "inline-block";
+                
+                
                 return;
             } else {
                 // Verify that two players not going over each other
@@ -285,7 +297,7 @@ window.addEventListener('load', function () {
             cookieContext.clearRect(0, 0, cookieCanvas.width, cookieCanvas.height);
 
             if (playerOne.cookiesEaten > playerTwo.cookiesEaten) {
-                elementToShowWinner.firstElementChild.innerHTML += "Player 1";
+                elementToShowWinner.firstElementChild.innerHTML += player1Name;
                 elementToShowWinner.lastElementChild.innerHTML += playerOne.cookiesEaten;
                 elementToShowWinner.style.display = "block";
                 elementToShowWinner.appendChild(playerOneImg);
@@ -293,7 +305,7 @@ window.addEventListener('load', function () {
                 playerOneImg.style.display = "inline-block";
                 restartButton.style.display = "inline-block";
             } else if (playerOne.cookiesEaten < playerTwo.cookiesEaten) {
-                elementToShowWinner.firstElementChild.innerHTML += "Player 2";
+                elementToShowWinner.firstElementChild.innerHTML += player2Name;
                 elementToShowWinner.lastElementChild.innerHTML += playerTwo.cookiesEaten;
                 elementToShowWinner.style.display = "block";
                 elementToShowWinner.appendChild(playerTwoImg);
@@ -314,6 +326,7 @@ window.addEventListener('load', function () {
 
         window.requestAnimationFrame(gameLoop);
     }
+
     gameLoop();
 
-});
+}
